@@ -1,4 +1,4 @@
-
+﻿
 #define _CRT_SECURE_NO_WARNINGS
 #define BUILD_DLL
 #include "pch.h"
@@ -101,11 +101,13 @@ extern "C"	{
 			for (int i = 0; i < 15; ++i) {
 				for (int j = 0; j < 15 - word.size() + 1; ++j) {
 					bool flag = true; int needSize = 0;
+					bool firstWord = false;
 					vector<int> count(256); queue<int> blankedLetters;
 					for (char ch : letters) {
 						count[ch]++;
 					}
 					for (int k = j; k < j + word.size(); ++k) {
+						if (i == 7 && k == 7) firstWord = true;
 						if (matrix[i][k] != ' ') {
 							if (matrix[i][k] != word[k - j]) {
 								flag = false;
@@ -130,7 +132,7 @@ extern "C"	{
 					}
 					if (count['_'] < blankedLetters.size()) flag = false;
 
-					if (!flag || needSize == word.size() || !needSize) continue;
+					if (!flag || (needSize == word.size() && !firstWord) || !needSize) continue;
 					if (j && matrix[i][j - 1] != ' ') continue;
 					if (j + word.size() < 15 && matrix[i][j + word.size()] != ' ') continue;
 					for (int k = j; k < j + word.size(); ++k) {
@@ -169,9 +171,11 @@ extern "C"	{
 			for (int j = 0; j < 15; ++j) {
 				for (int i = 0; i < 15 - word.size() + 1; ++i) {
 					bool flag = true; int needSize = 0;
+					bool firstWord = false;
 					vector<int> count(256); queue<int> blankedLetters;
 					for (char ch : letters) count[ch]++;
 					for (int k = i; k < i + word.size(); ++k) {
+						if (k == 7 && j == 7) firstWord = true;
 						if (matrix[k][j] != ' ') {
 							if (matrix[k][j] != word[k - i]) {
 								flag = false;
@@ -196,7 +200,7 @@ extern "C"	{
 					}
 					if (count['_'] < blankedLetters.size()) flag = false;
 
-					if (!flag || needSize == word.size() || !needSize) continue;
+					if (!flag || (needSize == word.size() && !firstWord) || !needSize) continue;
 					if (i && matrix[i - 1][j] != ' ') continue;
 					if (i + word.size() < 15 && 
 						matrix[i + word.size()][j] != ' ') continue;
