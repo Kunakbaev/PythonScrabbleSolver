@@ -64,7 +64,9 @@ class MainApp(App):
                       self.size[1] - self.window_padding - (i + 1) * buttonH + offset),
                  size_hint=((buttonW - 2 * offset) / self.size[0], (buttonH - 2 * offset) / self.size[1])
                 )
-                btn.bind(on_press=self.changeLetter)
+                btn.ids['i'] = i
+                btn.ids['j'] = j
+                btn.bind(on_press=self.tile_on_press)
                 self.tiles[i].append(btn)
                 layout.add_widget(btn)
         #layout.add_widget(label)
@@ -73,7 +75,7 @@ class MainApp(App):
         return layout
 
     def addOtherButtons(self):
-        h = ((self.size[1] - self.window_padding * 5) / 3) / 4
+        h = (self.size[1] - self.window_padding * 6) / 12
         w = (self.size[0] - self.window_padding * 4 - self.buttonW * self.w) / 2
         self.putButton = Button(text='Поставить',
           background_normal='',
@@ -82,9 +84,30 @@ class MainApp(App):
           color=BLACK,
           font_size=20, bold=True,
           pos=(self.window_padding * 3 + self.buttonW * self.w + w * 2 / 3, self.size[1] - 2 * h - 2 * self.window_padding),
-          size_hint=((4 * w / 3) / self.size[0], h / self.size[1])
+          size_hint=((4 * w / 3 - h - self.window_padding) / self.size[0], h / self.size[1])
         )
-        self.myLetters = "тикажоп"
+        self.changeOrientation = Button(text='H',
+        background_normal='',
+        background_down='',
+        background_color=WHITE,
+        color=BLACK,
+        font_size=20, bold=True,
+        pos=(self.window_padding * 3 + self.buttonW * self.w + w * 2 / 3 + 4 * w / 3 - h,
+             self.size[1] - 2 * h - 2 * self.window_padding),
+        size_hint=(h / self.size[0], h / self.size[1])
+        )
+        self.helpLabel = TextInput(text=helpWord,
+        background_disabled_normal="", multiline=True,
+        background_color=WHITE, foreground_color=BLACK,
+        font_size=17, pos=(0, 0), disabled=True,
+        size_hint=(1, None), height=800
+        )
+        self.helpLabelView = ScrollView(do_scroll_x=False, do_scroll_y=True,
+        pos=(self.window_padding * 3 + self.buttonW * self.w + w * 2 / 3, self.window_padding),
+        size_hint=((4 * w / 3) / self.size[0], 4 * h / self.size[1])
+        )
+        self.helpLabelView.add_widget(self.helpLabel)
+        self.myLetters = "тыкласс"
         self.myLettersLabel = Button(text='Мои буквы : ' + self.myLetters,
            background_normal='',
            background_down='',
@@ -100,7 +123,7 @@ class MainApp(App):
                     background_color=WHITE, foreground_color=BLACK, hint_text="Ваше слово : ",
                   font_size=30)
         self.meaningPanel = TextInput(multiline=True, size_hint=((4 * w / 3) / self.size[0], None),
-                height=10000, font_size=18,
+                height=800, font_size=18,
                 pos=(self.window_padding * 3 + self.buttonW * self.w + w * 2 / 3,
                        self.size[1] - 8 * h - 4 * self.window_padding),
                 disabled=True, background_disabled_normal="", hint_text="Его значение",
@@ -115,9 +138,12 @@ class MainApp(App):
         self.lettersInput = None
         self.myLettersLabel.bind(on_press=self.changeMyLetters)
         self.putButton.bind(on_press=self.putSolution)
+        self.changeOrientation.bind(on_press=self.changeOrientationFunc)
         self.meaningInput.bind(on_text_validate=self.showMeaning)
         self.layout.add_widget(self.myLettersLabel)
         self.layout.add_widget(self.putButton)
+        self.layout.add_widget(self.changeOrientation)
+        self.layout.add_widget(self.helpLabelView)
         self.layout.add_widget(self.meaningInput)
         self.layout.add_widget(self.meaningPanelView)
         self.addWordsPanel()
@@ -168,15 +194,7 @@ class MainApp(App):
          abs(i - self.h // 2) == 1 and abs(j - self.w // 2) == 5): return DOUBLE_LETTER
         return NORM
 
-    def putSolution(self, instance):
-        if self.ind == -1:
-            return
-        children = self.wordsPanel.children.copy()
-        for elem in children:
-            self.wordsPanel.remove_widget(elem)
-        self.wordsPanel.add_widget(self.solveButton)
-        self.wordsPanel.height = 50
-        obj = self.solutions[self.ind]
+    def putWord(self, obj):
         if obj.h == 'h':
             for j in range(obj.j, obj.j + len(obj.word)):
                 self.tiles[obj.i][j].text = obj.word[j - obj.j]
@@ -187,6 +205,18 @@ class MainApp(App):
                 self.tiles[i][obj.j].text = obj.word[i - obj.i]
                 self.matrix[i][obj.j] = obj.word[i - obj.i]
                 self.tiles[i][obj.j].color = WHITE
+
+    def putSolution(self, instance):
+        if self.ind == -1:
+            return
+        children = self.wordsPanel.children.copy()
+        for elem in children:
+            self.wordsPanel.remove_widget(elem)
+        self.wordsPanel.add_widget(self.solveButton)
+        self.wordsPanel.height = 50
+        obj = self.solutions[self.ind]
+        self.putWord(obj)
+
         self.ind = -1
         self.solutions = []
 
@@ -269,7 +299,24 @@ class MainApp(App):
         self.showSolution()
         self.addWordsToPanel()
 
+    def tile_on_press(self, instance):
+        i = instance.ids['i']
+        j = instance.ids['j']
+        text = self.meaningInput.text
+        if len(text) == 0:
+            return
+        h = 'h' if self.changeOrientation.text == 'H' else 'v'
+        if h == 'h':
+            if self.w <= j + len(text) - 1:
+                return
+        else:
+            if self.h <= i + len(text) - 1:
+                return
+        word = solve.Word(text, i, j, h, 0, 0)
+        self.putWord(word)
 
+    def changeOrientationFunc(self, instance):
+        instance.text = 'V' if instance.text == 'H' else 'H'
 
     def showMeaning(self, value):
         self.meaningPanel.text = ""
@@ -303,25 +350,3 @@ class MainApp(App):
                               pos=instance.pos, background_color=(1,1,1,1), foreground_color=(0,0,0,1), font_size=30)
         self.lettersInput.bind(on_text_validate=self.on_enterMyLetters)
         self.layout.add_widget(self.lettersInput)
-
-    def on_enter(self, value):
-        print('New letter : ', self.window_padding, value.text)
-        self.layout.remove_widget(self.input)
-        self.isInput = False
-        self.curButton.text = value.text
-        i = int((self.size[1] - self.curButton.pos[1]) // self.buttonH - 1)
-        j = int((self.curButton.pos[0] - self.window_padding) // self.buttonW)
-        print(i, j)
-        self.matrix[i][j] = value.text
-
-    def changeLetter(self, instance):
-        if self.isInput:
-            return
-        instance.text = ''
-        self.curButton = instance
-        self.isInput = True
-        self.input = TextInput(multiline=False, size_hint=instance.size_hint,
-                              pos=instance.pos, background_color=(1,1,1,0),
-                               foreground_color=(1,1,1,1), font_size=instance.font_size)
-        self.input.bind(on_text_validate=self.on_enter)
-        self.layout.add_widget(self.input)

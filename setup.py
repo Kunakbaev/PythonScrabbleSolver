@@ -1,12 +1,17 @@
 
 import encodeWords
+import os
 
 # prepare words and meanings
 
 WORDS_IN_SOLUTION = 50
+
+currentDirectory = os.path.dirname(os.path.realpath(__file__))
 DLL_PATH = "C:\\Users\\tyrep\\Documents\\C++LibForPython\\Dll1\\x64\\Release\\Dll1.dll"
-RESULT_WORDS_FILE_PATH = "C:\\Users\\tyrep\\Documents\\ScrabbleSolver\\resultWords.txt"
-DICT_PATH = "C:/Users/tyrep/Documents/ScrabbleSolver/dict.txt.txt"
+# DLL_PATH = currentDirectory + "\\Dll1.dll"
+RESULT_WORDS_FILE_PATH = currentDirectory + "\\resultWords.txt"
+DICT_PATH = currentDirectory + "\\dict.txt.txt"
+print(currentDirectory)
 
 meanings = []
 wordsTree = {}
@@ -59,3 +64,24 @@ TRIPLE_WORD = (.9059, .0941, .2157, 1)
 CENTER = (1, .7529, .7961, 1)
 WHITE = (1,1,1,1)
 BLACK = (0,0,0,1)
+
+
+# help text (instruction)
+
+helpWord = "Инструкция.\n" \
+           "* Если вы не знакомы с правилами игры, то их легко можно найти онлайн.\n" \
+           "* Слева расположенно игровое поле.\n" \
+           "* На панель МОИ БУКВЫ можно кликнуть и ввести ваши буквы.\n" \
+           "* Если вы хотите найти налучший способ поставить слово на доску, нажмите ПОДОБРАТЬ СЛОВО. \n" \
+           "После некоторого времени вы увидите список слов и их стоимости. Чтобы посмотреть информацию о конкретном слове " \
+           "кликните на него. Нажав на кнопку ПОСТАВИТЬ вы поставите слово на доску.\n" \
+           "* Если вы хотите узнать, существует ли какое-то слово, введите его в поле ВАШЕ СЛОВО и нажмите enter.\n" \
+           "* Если вы хотите поставить слово другого игрока, то введите это слово в поле ВАШЕ СЛОВО, затем выберите необходимую " \
+           "ориентацию нажав на маленькую квадратную кнопку (H - слово ставится горизантально, V - слово " \
+           "ставится вертикально). Затем кликните на ячейку на поле, с которой начинается слово." \
+           "\n\nTODO: \n* Добавить множественные формы существительных\n" \
+           "* Попробовать ускорить приложение с помощью многопоточности или изменения алгоритма\n" \
+           "* Сделать код красивым\n" \
+           "* Досмотреть сериал СВЕРХЪЕСТЕСТВЕННОЕ" \
+           ""
+
