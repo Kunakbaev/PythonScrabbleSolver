@@ -1,0 +1,60 @@
+
+import requests
+from bs4 import BeautifulSoup
+
+words = open("./words.txt", "w", encoding="utf-8")
+meanings = open("./meanings.txt", "w", encoding="utf-8")
+
+smallURL = 'https://ru.wiktionary.org'
+URL =  'https://ru.wiktionary.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B5_%D1%81%D1%83%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B5'
+
+
+def loadPage(link, word, wordInd):
+    wordPage = requests.get(link)
+    wordSoup = BeautifulSoup(wordPage.content, "html.parser")
+    mwPagesDiv = wordSoup.find("div", class_="mw-parser-output")
+    
+    words.write()
+    
+    ol = mwPagesDiv.find("ol")
+    meaning = ol.find("li").text
+    meaning.replace("\n", "/n")
+    meanings.write(meaning)
+
+
+pageInd = 1
+wordInd = 1
+while True:
+    if pageInd == 11: break
+    page = requests.get(URL)
+    soup = BeautifulSoup(page.content, "html.parser")
+    mwPagesDiv = soup.find(id="mw-pages")
+    mwCategoryColumnsDiv = mwPagesDiv.find("div", class_="mw-category-columns")
+    ulList = mwCategoryColumnsDiv.find_all("ul")
+    for ul in ulList:
+        linksList = ul.find_all("li")
+        #print(linksList)
+        cnt = 1
+        for elem in linksList:
+            #if cnt == 6: break
+            link = elem.find("a")
+            href = link["href"]
+            word = link["title"]
+            if len(word) < 3 or len(word) > 15 or word[0] == word[0].upper() or word.find('-') != -1:
+                continue
+            meaning = loadPage(smallURL + href, word, wordInd)
+            #print(cnt, word, meaning, end=" ")
+            print(f"{pageInd}.{cnt}")
+            cnt += 1
+            wordInd += 1
+    nextPageA = mwPagesDiv.find_all("a")[1]
+    if pageInd == 1: nextPageA = mwPagesDiv.find("a")
+    URL = smallURL + nextPageA["href"]
+    if nextPageA.text != "Следующая страница":
+        break
+    pageInd += 1
+print("All job has been done!")
+
+
+
+
