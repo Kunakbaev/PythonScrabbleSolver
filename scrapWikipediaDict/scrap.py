@@ -13,19 +13,32 @@ def loadPage(link, word, wordInd):
     wordPage = requests.get(link)
     wordSoup = BeautifulSoup(wordPage.content, "html.parser")
     mwPagesDiv = wordSoup.find("div", class_="mw-parser-output")
-    
-    words.write()
-    
+
+    morfotableDiv = mwPagesDiv.find("table", "morfotable ru")
+    endl = "\n"
+    words.write(str(wordInd) + endl)
+    words.write(word + endl)
+    if morfotableDiv != None:
+        td = morfotableDiv.find_all("tr")[1].find_all("td")[2]
+        multipleWordBad = td.text
+        multipleWord = ""
+        for ch in multipleWordBad:
+            if ('а' <= ch and ch <= 'я') or ch == 'ё':
+                multipleWord += ch
+
+        if multipleWordBad[0] != '*' and multipleWord != word:
+            words.write(multipleWord + endl)
+
     ol = mwPagesDiv.find("ol")
     meaning = ol.find("li").text
-    meaning.replace("\n", "/n")
-    meanings.write(meaning)
+    meaning.replace(endl, "/n")
+    meanings.write(meaning + endl)
 
 
 pageInd = 1
 wordInd = 1
 while True:
-    if pageInd == 11: break
+    # if pageInd == 11: break
     page = requests.get(URL)
     soup = BeautifulSoup(page.content, "html.parser")
     mwPagesDiv = soup.find(id="mw-pages")
@@ -36,7 +49,7 @@ while True:
         #print(linksList)
         cnt = 1
         for elem in linksList:
-            #if cnt == 6: break
+            # if cnt == 11: break
             link = elem.find("a")
             href = link["href"]
             word = link["title"]
@@ -54,6 +67,7 @@ while True:
         break
     pageInd += 1
 print("All job has been done!")
+print(wordInd - 1, "words have been collected")
 
 
 
