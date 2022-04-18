@@ -7,32 +7,19 @@ import os
 WORDS_IN_SOLUTION = 50
 
 currentDirectory = os.path.dirname(os.path.realpath(__file__))
-DLL_PATH = "C:\\Users\\tyrep\\Documents\\C++LibForPython\\Dll1\\x64\\Release\\Dll1.dll"
-# DLL_PATH = currentDirectory + "\\Dll1.dll"
+# DLL_PATH = "C:\\Users\\tyrep\\Documents\\C++LibForPython\\Dll1\\x64\\Release\\Dll1.dll"
+DLL_PATH = currentDirectory + "\\Dll1.dll"
 RESULT_WORDS_FILE_PATH = currentDirectory + "\\resultWords.txt"
-DICT_PATH = currentDirectory + "\\dict.txt.txt"
+DICT_PATH = currentDirectory + "\\dict.txt"
 print(currentDirectory)
 
 meanings = []
 wordsTree = {}
-def loadMeanings(nouns):
-    for i in range(len(nouns)):
-        elem = nouns[i]
-        word = elem['word']
-        meaning = elem['meaning']
-        v = wordsTree
-        for ch in word:
-            if ch not in v:
-                v[ch] = {}
-            v = v[ch]
-        v['ind'] = i
-        meanings.append(meaning)
 
-def loadEncodedNouns(nouns):
+def loadEncodedNouns(words):
     with open(DICT_PATH, "w",
               encoding="utf-8") as f:
-        for i in range(len(nouns)):
-            word = nouns[i]['word']
+        for word in words:
             if word.find(' ') != -1:
                 continue
             w = ""
@@ -46,6 +33,54 @@ def loadEncodedNouns(nouns):
                 continue
             f.write(w)
             f.write('\n')
+
+def loadNouns():
+    lines = []
+    wordLines = []
+    with open(currentDirectory + "\\meanings.txt", "r", encoding="utf-8") as f:
+        for line in f:
+            lines.append(line)
+    with open(currentDirectory + "\\words.txt", "r", encoding="utf-8") as f:
+        for line in f:
+            wordLines.append(line)
+    i = 0
+    meaning = ""
+    breakLine = "----------"
+    words = []
+    while i < len(lines):
+        if lines[i][:-1] == breakLine:
+            if i:
+                meanings.append(meaning)
+            meaning = ""
+        else:
+            meaning += lines[i][:-1]
+        i += 1
+    ind = 0
+    i = 0
+    temp = []
+    badly = 0
+    while i < len(wordLines):
+        if wordLines[i][:-1] == breakLine:
+            if i:
+                ind += 1
+                if len(temp) >= 2 and len(temp[1]) >= len(temp[0]) + 3:
+                    print(temp[0], temp[1])
+                    badly += 1
+                temp = []
+        else:
+            word = wordLines[i][:-1]
+            words.append(word)
+            temp.append(word)
+            v = wordsTree
+            for ch in word:
+                if ch not in v:
+                    v[ch] = {}
+                v = v[ch]
+            v['ind'] = ind
+        i += 1
+    loadEncodedNouns(words)
+    print(badly)
+
 
 # window parametres
 
