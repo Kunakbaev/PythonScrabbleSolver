@@ -8,8 +8,7 @@ if __name__ == '__main__':
     nouns = db.getData()
     print('Nouns have been loaded : ', len(nouns))
 
-    setup.loadMeanings(nouns)
-    setup.loadEncodedNouns(nouns)
+    setup.loadNouns()
     solve.loadNounsToDll()
     # print(meanings)
     # print(nouns)
