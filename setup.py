@@ -1,51 +1,64 @@
 
-import encodeWords
-import os
 
 # prepare words and meanings
 
 WORDS_IN_SOLUTION = 50
 
-currentDirectory = os.path.dirname(os.path.realpath(__file__))
-# DLL_PATH = "C:\\Users\\tyrep\\Documents\\C++LibForPython\\Dll1\\x64\\Release\\Dll1.dll"
-DLL_PATH = currentDirectory + "\\Dll1.dll"
-RESULT_WORDS_FILE_PATH = currentDirectory + "\\resultWords.txt"
-DICT_PATH = currentDirectory + "\\dict.txt"
-print(currentDirectory)
+letterCost = {
+    'а': 1,
+    'б': 3,
+    'в': 1,
+    'г': 3,
+    'д': 2,
+    'е': 1,
+    'ё': 3,
+    'ж': 5,
+    'з': 5,
+    'и': 1,
+    'й': 4,
+    'к': 2,
+    'л': 2,
+    'м': 2,
+    'н': 1,
+    'о': 1,
+    'п': 2,
+    'р': 1,
+    'с': 1,
+    'т': 1,
+    'у': 2,
+    'ф': 10,
+    'х': 5,
+    'ц': 5,
+    'ч': 5,
+    'ш': 8,
+    'щ': 10,
+    'ъ': 10,
+    'ы': 4,
+    'ь': 3,
+    'э': 8,
+    'ю': 8,
+    'я': 3,
+    '_': 2
+}
 
 meanings = []
 wordsTree = {}
 
-def loadEncodedNouns(words):
-    with open(DICT_PATH, "w",
-              encoding="utf-8") as f:
-        for word in words:
-            if word.find(' ') != -1:
-                continue
-            w = ""
-            isCorrect = True
-            for ch in word:
-                if (ch < 'а' or 'я' < ch) and ch != 'ё':
-                    isCorrect = False
-                    break
-                w += encodeWords.rusToEn(ch)
-            if not isCorrect:
-                continue
-            f.write(w)
-            f.write('\n')
-
 def loadNouns():
+    # ww = "тѐлереда́кторы"
+    # for i in range(len(ww)): print(i, ww[i])
     lines = []
     wordLines = []
-    with open(currentDirectory + "\\meanings.txt", "r", encoding="utf-8") as f:
+    breakLine = "----------"
+    with open("./meanings.txt", "r", encoding="utf-8") as f:
         for line in f:
             lines.append(line)
-    with open(currentDirectory + "\\words.txt", "r", encoding="utf-8") as f:
+    # correct = open("./correct.txt", "w", encoding="utf-8")
+    with open("./correct.txt", "r", encoding="utf-8") as f:
         for line in f:
             wordLines.append(line)
     i = 0
     meaning = ""
-    breakLine = "----------"
     words = []
     while i < len(lines):
         if lines[i][:-1] == breakLine:
@@ -57,29 +70,27 @@ def loadNouns():
         i += 1
     ind = 0
     i = 0
-    temp = []
-    badly = 0
     while i < len(wordLines):
         if wordLines[i][:-1] == breakLine:
             if i:
                 ind += 1
-                if len(temp) >= 2 and len(temp[1]) >= len(temp[0]) + 3:
-                    print(temp[0], temp[1])
-                    badly += 1
-                temp = []
         else:
             word = wordLines[i][:-1]
-            words.append(word)
-            temp.append(word)
-            v = wordsTree
+            okey = True
             for ch in word:
-                if ch not in v:
-                    v[ch] = {}
-                v = v[ch]
-            v['ind'] = ind
+                if (ch < 'а' or 'я' < ch) and ch != 'ё':
+                    okey = False
+                    break
+            if okey:
+                words.append(word)
+                v = wordsTree
+                for ch in word:
+                    if ch not in v:
+                        v[ch] = {}
+                    v = v[ch]
+                v['ind'] = ind
         i += 1
-    loadEncodedNouns(words)
-    print(badly)
+    print("Words have been loaded : ", len(words))
 
 
 # window parametres
@@ -97,8 +108,8 @@ TRIPLE_LETTER = (.1922, .3882, .6118, 1)
 DOUBLE_WORD = (1, .6667, 0, 1)
 TRIPLE_WORD = (.9059, .0941, .2157, 1)
 CENTER = (1, .7529, .7961, 1)
-WHITE = (1,1,1,1)
-BLACK = (0,0,0,1)
+WHITE = (1, 1, 1, 1)
+BLACK = (0, 0, 0, 1)
 
 
 # help text (instruction)
@@ -110,6 +121,7 @@ helpWord = "Инструкция.\n" \
            "* Если вы хотите найти налучший способ поставить слово на доску, нажмите ПОДОБРАТЬ СЛОВО. \n" \
            "После некоторого времени вы увидите список слов и их стоимости. Чтобы посмотреть информацию о конкретном слове " \
            "кликните на него. Нажав на кнопку ПОСТАВИТЬ вы поставите слово на доску.\n" \
+           "* Чтобы очистить ячейку очистите поле ввода слова и нажмите на ячейку.\n" \
            "* Если вы хотите узнать, существует ли какое-то слово, введите его в поле ВАШЕ СЛОВО и нажмите enter.\n" \
            "* Если вы хотите поставить слово другого игрока, то введите это слово в поле ВАШЕ СЛОВО, затем выберите необходимую " \
            "ориентацию нажав на маленькую квадратную кнопку (H - слово ставится горизантально, V - слово " \
