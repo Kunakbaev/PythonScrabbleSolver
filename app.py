@@ -1,11 +1,9 @@
 from kivy.app import App
-from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.textinput import TextInput
-from kivy.graphics import Color, Rectangle
 from kivy.core.window import Window
 import copy
 
@@ -195,6 +193,7 @@ class MainApp(App):
         return NORM
 
     def putWord(self, obj):
+        solve.used.append(obj.wordInd)
         if obj.h == 'h':
             for j in range(obj.j, obj.j + len(obj.word)):
                 self.tiles[obj.i][j].text = obj.word[j - obj.j]
@@ -259,9 +258,9 @@ class MainApp(App):
         self.showSolution()
 
     def addWordsToPanel(self):
-        h = self.viewWordsPanel.size_hint[1] * self.size[1]
+        h = self.size[1] - self.window_padding * 2
         w = self.viewWordsPanel.size_hint[0] * self.size[0]
-        self.wordsPanel.height = (h / 20) * len(self.solutions)
+        self.wordsPanel.height = (h / 10) * len(self.solutions)
         children = self.wordsPanel.children.copy()
         for elem in children: self.wordsPanel.remove_widget(elem)
         for i in range(len(self.solutions)):
@@ -304,6 +303,9 @@ class MainApp(App):
         j = instance.ids['j']
         text = self.meaningInput.text
         if len(text) == 0:
+            # print("cleaning")
+            self.matrix[i][j] = ''
+            self.tiles[i][j].text = ''
             return
         h = 'h' if self.changeOrientation.text == 'H' else 'v'
         if h == 'h':
@@ -321,22 +323,24 @@ class MainApp(App):
     def showMeaning(self, value):
         self.meaningPanel.text = ""
         word = value.text
-        v = wordsTree
         for ch in word:
-            if ch not in v:
-                self.meaningPanel.text += "Такого слова нет."
+            if (ch < 'а' or 'я' < ch) and ch != 'ё':
+                self.meaningPanel.text += "Слово должно состоять только из русских букв."
                 return
-            v = v[ch]
-        if 'ind' not in v:
+        meaning = solve.isWord(word)
+        if meaning == -1:
             self.meaningPanel.text += "Такого слова нет."
             return
-        meaning = meanings[v['ind']]
-        lines = len(meaning) / 20
+        lines = len(meaning) / 20 + 10
         #print(meaning)
         self.meaningPanel.height = self.meaningPanel.line_height * lines
         self.meaningPanel.text += meaning
 
     def on_enterMyLetters(self, value):
+        for ch in value.text:
+            if (ch < 'а' or 'я' < ch) and ch != 'ё' and ch != '_':
+                self.lettersInput.text = "Русские буквы и _"
+                return
         self.layout.remove_widget(self.lettersInput)
         self.lettersInput = None
         self.myLetters = value.text
@@ -350,3 +354,5 @@ class MainApp(App):
                               pos=instance.pos, background_color=(1,1,1,1), foreground_color=(0,0,0,1), font_size=30)
         self.lettersInput.bind(on_text_validate=self.on_enterMyLetters)
         self.layout.add_widget(self.lettersInput)
+        
+        
