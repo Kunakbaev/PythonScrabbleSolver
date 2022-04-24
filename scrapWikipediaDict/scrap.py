@@ -4,31 +4,47 @@ from bs4 import BeautifulSoup
 
 words = open("./words.txt", "w", encoding="utf-8")
 meanings = open("./meanings.txt", "w", encoding="utf-8")
+exceptions = open("./exceptions.txt", "w", encoding="utf-8")
 
+breakLine = "----------"
 smallURL = 'https://ru.wiktionary.org'
 URL =  'https://ru.wiktionary.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B5_%D1%81%D1%83%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B5'
 
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 
 def loadPage(link, word, wordInd):
+    endl = "\n"
     try:
         wordPage = requests.get(link, verify=False)
         wordSoup = BeautifulSoup(wordPage.content, "html.parser")
         mwPagesDiv = wordSoup.find("div", class_="mw-parser-output")
-        endl = "\n"
+
+        grammarType = mwPagesDiv.find("a", {"title": "существительное"})
+        #print(grammarType)
+        if grammarType == None:
+            return False
 
         # getting meaning of the word
-        ol = mwPagesDiv.find("ol")
+        ol = grammarType.find_next("ol")
         if ol == None:
+            # print("mean")
             return False
         meaning = ol.find("li").text
-        meaning.replace(endl, "/n")
 
         # getting multiple form of word (for example: apple -> apples)
-        morfotableDiv = mwPagesDiv.find("table", "morfotable ru")
+        morfotableDiv = grammarType.find_previous("table", "morfotable ru")
+        #print(morfotableDiv)
         multipleWord = ""
         if morfotableDiv != None:
-            td = morfotableDiv.find_all("tr")[1].find_all("td")[2]
+            tr = morfotableDiv.find_all("tr")
+            if len(tr) != 7:
+                if len(tr) != 8:
+                    return False
+                td = tr[7].find("td")
+                # print(td.text)
+                if td.text != "М.":
+                    return False
+            td = tr[1].find_all("td")[2]
             multipleWordBad = td.text
             multiple = ""
             for ch in multipleWordBad:
@@ -38,16 +54,21 @@ def loadPage(link, word, wordInd):
             if multipleWordBad[0] != '*' and multiple != word:
                 multipleWord = multiple
 
-        words.write(str(wordInd) + endl)
+        words.write(breakLine + endl)
         words.write(word + endl)
         if len(multipleWord) != 0:
             words.write(multipleWord + endl)
+        meanings.write(breakLine + endl)
         meanings.write(meaning + endl)
         return True
     except Exception:
         print("Some crazy exception with ", word, " at link ", link)
+        exceptions.write("Some crazy exception with " + word + " at link " + link + endl)
         return False
 
+
+
+# print(loadPage("https://ru.wiktionary.org/wiki/%D1%85%D0%BE%D1%80", "fuck", 1))
 
 pageInd = 1
 wordInd = 1
@@ -73,7 +94,7 @@ while True:
             isOkey = loadPage(smallURL + href, word, wordInd)
             if not isOkey:
                 continue
-            print(f"{pageInd}.{cnt} {word}")
+            print(f"{pageInd}.{cnt} {word} wordInd : {wordInd}")
             #print(cnt, word, meaning, end=" ")
             cnt += 1
             wordInd += 1
