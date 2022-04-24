@@ -1,4 +1,4 @@
-from kivy.app import App
+\from kivy.app import App
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.boxlayout import BoxLayout
@@ -10,7 +10,9 @@ import copy
 from setup import *
 import solve
 
+
 Window.size = (WINDOW_W, WINDOW_H)
+
 
 class MainApp(App):
     def build(self):
@@ -47,27 +49,27 @@ class MainApp(App):
                 elif i % 4 == 1 and j % 4 == 1:
                     col = TRIPLE_LETTER
                 elif (abs(i - self.h // 2) == 7 and (j % 8 == 3)) or (
-                    abs(i - self.h // 2) == 4 and (j % 7 == 0)) or (
-                    abs(i - self.h // 2) == 0 and (j % 8 == 3)) or (
-                    abs(i - self.h // 2) == 1 and abs(j - self.w // 2) == 1) or (
-                    abs(i - self.h // 2) == 5 and abs(j - self.w // 2) == 1) or (
-                    abs(i - self.h // 2) == 1 and abs(j - self.w // 2) == 5):
+                        abs(i - self.h // 2) == 4 and (j % 7 == 0)) or (
+                        abs(i - self.h // 2) == 0 and (j % 8 == 3)) or (
+                        abs(i - self.h // 2) == 1 and abs(j - self.w // 2) == 1) or (
+                        abs(i - self.h // 2) == 5 and abs(j - self.w // 2) == 1) or (
+                        abs(i - self.h // 2) == 1 and abs(j - self.w // 2) == 5):
                     col = DOUBLE_LETTER
                 btn = Button(text='',
-                 background_normal='',
-                 background_down='',
-                 background_color=col,
-                 font_size=30, bold=True,
-                 pos=(self.window_padding + j * buttonW + offset,
-                      self.size[1] - self.window_padding - (i + 1) * buttonH + offset),
-                 size_hint=((buttonW - 2 * offset) / self.size[0], (buttonH - 2 * offset) / self.size[1])
-                )
+                             background_normal='',
+                             background_down='',
+                             background_color=col,
+                             font_size=30, bold=True,
+                             pos=(self.window_padding + j * buttonW + offset,
+                                  self.size[1] - self.window_padding - (i + 1) * buttonH + offset),
+                             size_hint=((buttonW - 2 * offset) / self.size[0], (buttonH - 2 * offset) / self.size[1])
+                             )
                 btn.ids['i'] = i
                 btn.ids['j'] = j
                 btn.bind(on_press=self.tile_on_press)
                 self.tiles[i].append(btn)
                 layout.add_widget(btn)
-        #layout.add_widget(label)
+        # layout.add_widget(label)
         self.layout = layout
         self.addOtherButtons()
         return layout
@@ -76,62 +78,66 @@ class MainApp(App):
         h = (self.size[1] - self.window_padding * 6) / 12
         w = (self.size[0] - self.window_padding * 4 - self.buttonW * self.w) / 2
         self.putButton = Button(text='Поставить',
-          background_normal='',
-          background_down='',
-          background_color=WHITE,
-          color=BLACK,
-          font_size=20, bold=True,
-          pos=(self.window_padding * 3 + self.buttonW * self.w + w * 2 / 3, self.size[1] - 2 * h - 2 * self.window_padding),
-          size_hint=((4 * w / 3 - h - self.window_padding) / self.size[0], h / self.size[1])
-        )
+                                background_normal='',
+                                background_down='',
+                                background_color=WHITE,
+                                color=BLACK,
+                                font_size=20, bold=True,
+                                pos=(self.window_padding * 3 + self.buttonW * self.w + w * 2 / 3,
+                                     self.size[1] - 2 * h - 2 * self.window_padding),
+                                size_hint=((4 * w / 3 - h - self.window_padding) / self.size[0], h / self.size[1])
+                                )
         self.changeOrientation = Button(text='H',
-        background_normal='',
-        background_down='',
-        background_color=WHITE,
-        color=BLACK,
-        font_size=20, bold=True,
-        pos=(self.window_padding * 3 + self.buttonW * self.w + w * 2 / 3 + 4 * w / 3 - h,
-             self.size[1] - 2 * h - 2 * self.window_padding),
-        size_hint=(h / self.size[0], h / self.size[1])
-        )
+                                        background_normal='',
+                                        background_down='',
+                                        background_color=WHITE,
+                                        color=BLACK,
+                                        font_size=20, bold=True,
+                                        pos=(
+                                        self.window_padding * 3 + self.buttonW * self.w + w * 2 / 3 + 4 * w / 3 - h,
+                                        self.size[1] - 2 * h - 2 * self.window_padding),
+                                        size_hint=(h / self.size[0], h / self.size[1])
+                                        )
         self.helpLabel = TextInput(text=helpWord,
-        background_disabled_normal="", multiline=True,
-        background_color=WHITE, foreground_color=BLACK,
-        font_size=17, pos=(0, 0), disabled=True,
-        size_hint=(1, None), height=800
-        )
+                                   background_disabled_normal="", multiline=True,
+                                   background_color=WHITE, foreground_color=BLACK,
+                                   font_size=17, pos=(0, 0), disabled=True,
+                                   size_hint=(1, None), height=800
+                                   )
         self.helpLabelView = ScrollView(do_scroll_x=False, do_scroll_y=True,
-        pos=(self.window_padding * 3 + self.buttonW * self.w + w * 2 / 3, self.window_padding),
-        size_hint=((4 * w / 3) / self.size[0], 4 * h / self.size[1])
-        )
+                                        pos=(self.window_padding * 3 + self.buttonW * self.w + w * 2 / 3,
+                                             self.window_padding),
+                                        size_hint=((4 * w / 3) / self.size[0], 4 * h / self.size[1])
+                                        )
         self.helpLabelView.add_widget(self.helpLabel)
         self.myLetters = "тыкласс"
         self.myLettersLabel = Button(text='Мои буквы : ' + self.myLetters,
-           background_normal='',
-           background_down='',
-           background_color=WHITE,
-           color=BLACK,
-           font_size=20, bold=True,
-           pos=(self.window_padding * 3 + self.buttonW * self.w + w * 2 / 3, self.size[1] - h - self.window_padding),
-           size_hint=((4 * w / 3) / self.size[0], h / self.size[1])
-        )
+                                     background_normal='',
+                                     background_down='',
+                                     background_color=WHITE,
+                                     color=BLACK,
+                                     font_size=20, bold=True,
+                                     pos=(self.window_padding * 3 + self.buttonW * self.w + w * 2 / 3,
+                                          self.size[1] - h - self.window_padding),
+                                     size_hint=((4 * w / 3) / self.size[0], h / self.size[1])
+                                     )
         self.meaningInput = TextInput(multiline=False, size_hint=((4 * w / 3) / self.size[0], h / self.size[1]),
-                  pos=(self.window_padding * 3 + self.buttonW * self.w + w * 2 / 3,
-                       self.size[1] - 3 * h - 3 * self.window_padding),
-                    background_color=WHITE, foreground_color=BLACK, hint_text="Ваше слово : ",
-                  font_size=30)
+                                      pos=(self.window_padding * 3 + self.buttonW * self.w + w * 2 / 3,
+                                           self.size[1] - 3 * h - 3 * self.window_padding),
+                                      background_color=WHITE, foreground_color=BLACK, hint_text="Ваше слово : ",
+                                      font_size=30)
         self.meaningPanel = TextInput(multiline=True, size_hint=((4 * w / 3) / self.size[0], None),
-                height=800, font_size=18,
-                pos=(self.window_padding * 3 + self.buttonW * self.w + w * 2 / 3,
-                       self.size[1] - 8 * h - 4 * self.window_padding),
-                disabled=True, background_disabled_normal="", hint_text="Его значение",
-                background_color=WHITE, foreground_color=BLACK
-                )
+                                      height=800, font_size=18,
+                                      pos=(self.window_padding * 3 + self.buttonW * self.w + w * 2 / 3,
+                                           self.size[1] - 8 * h - 4 * self.window_padding),
+                                      disabled=True, background_disabled_normal="", hint_text="Его значение",
+                                      background_color=WHITE, foreground_color=BLACK
+                                      )
         self.meaningPanelView = ScrollView(size_hint=(1, 5 * h / self.size[1]),
-              pos=(self.window_padding * 3 + self.buttonW * self.w + w * 2 / 3,
-                   self.size[1] - 8 * h - 4 * self.window_padding),
-              do_scroll_x=False, do_scroll_y=True
-              )
+                                           pos=(self.window_padding * 3 + self.buttonW * self.w + w * 2 / 3,
+                                                self.size[1] - 8 * h - 4 * self.window_padding),
+                                           do_scroll_x=False, do_scroll_y=True
+                                           )
         self.meaningPanelView.add_widget(self.meaningPanel)
         self.lettersInput = None
         self.myLettersLabel.bind(on_press=self.changeMyLetters)
@@ -151,26 +157,26 @@ class MainApp(App):
         h = ((self.size[1] - self.window_padding * 5) * 2)
         print(h, h / 10000)
         self.solveButton = Button(text='Подобрать\nслово',
-          background_normal='',
-          background_down='',
-          background_color=WHITE,
-          color=BLACK,
-          font_size=20, bold=True,
-          size_hint=(1, None), height=50
-          )
+                                  background_normal='',
+                                  background_down='',
+                                  background_color=WHITE,
+                                  color=BLACK,
+                                  font_size=20, bold=True,
+                                  size_hint=(1, None), height=50
+                                  )
         self.solveButton.bind(on_press=self.solve)
         self.noWordsPanel = Button(text='Решений нет',
-         background_normal='',
-         background_down='',
-         background_color=WHITE,
-         color=BLACK,
-         font_size=23, bold=True,
-         pos=(0, 0),
-         size_hint=(1, None), height=100
-        )
+                                   background_normal='',
+                                   background_down='',
+                                   background_color=WHITE,
+                                   color=BLACK,
+                                   font_size=23, bold=True,
+                                   pos=(0, 0),
+                                   size_hint=(1, None), height=100
+                                   )
         self.wordsPanel = BoxLayout(orientation='vertical', size_hint=(1, None), height=50, spacing=5)
-        view = ScrollView(size_hint=(w / self.size[0], h / self.size[1]),
-                          pos=(self.window_padding * 2 + self.buttonW * self.w, self.size[1] - h - self.window_padding),
+        view = ScrollView(size_hint=(w / self.size[0], (self.size[1] - self.window_padding * 2) / self.size[1]),
+                          pos=(self.window_padding * 2 + self.buttonW * self.w, self.window_padding),
                           do_scroll_x=False, do_scroll_y=True)
         self.wordsPanel.add_widget(self.solveButton)
         view.add_widget(self.wordsPanel)
@@ -179,17 +185,20 @@ class MainApp(App):
 
     def getMultiplicator(self, i, j):
         if (i == 0 and (j == 0 or j == self.w // 2 or j == self.w - 1)
-                      ) or (i == self.h // 2 and (j == 0 or j == self.w - 1)
-                            ) or (i == self.h - 1 and (j == 0 or j == self.w // 2 or j == self.w - 1)):
-                return TRIPLE_WORD
-        elif (i == j or (i == self.w - j - 1)) and abs(i - self.h // 2) >= 3: return DOUBLE_WORD
-        elif i % 4 == 1 and j % 4 == 1: return TRIPLE_LETTER
+        ) or (i == self.h // 2 and (j == 0 or j == self.w - 1)
+        ) or (i == self.h - 1 and (j == 0 or j == self.w // 2 or j == self.w - 1)):
+            return TRIPLE_WORD
+        elif (i == j or (i == self.w - j - 1)) and abs(i - self.h // 2) >= 3:
+            return DOUBLE_WORD
+        elif i % 4 == 1 and j % 4 == 1:
+            return TRIPLE_LETTER
         elif (abs(i - self.h // 2) == 7 and (j % 8 == 3)) or (
-        abs(i - self.h // 2) == 4 and (j % 7 == 0)) or (
-         abs(i - self.h // 2) == 0 and (j % 8 == 3)) or (
-         abs(i - self.h // 2) == 1 and abs(j - self.w // 2) == 1) or (
-         abs(i - self.h // 2) == 5 and abs(j - self.w // 2) == 1) or (
-         abs(i - self.h // 2) == 1 and abs(j - self.w // 2) == 5): return DOUBLE_LETTER
+                abs(i - self.h // 2) == 4 and (j % 7 == 0)) or (
+                abs(i - self.h // 2) == 0 and (j % 8 == 3)) or (
+                abs(i - self.h // 2) == 1 and abs(j - self.w // 2) == 1) or (
+                abs(i - self.h // 2) == 5 and abs(j - self.w // 2) == 1) or (
+                abs(i - self.h // 2) == 1 and abs(j - self.w // 2) == 5):
+            return DOUBLE_LETTER
         return NORM
 
     def putWord(self, obj):
@@ -260,18 +269,18 @@ class MainApp(App):
     def addWordsToPanel(self):
         h = self.size[1] - self.window_padding * 2
         w = self.viewWordsPanel.size_hint[0] * self.size[0]
-        self.wordsPanel.height = (h / 10) * len(self.solutions)
+        self.wordsPanel.height = (h / 15) * len(self.solutions)
         children = self.wordsPanel.children.copy()
         for elem in children: self.wordsPanel.remove_widget(elem)
         for i in range(len(self.solutions)):
             elem = self.solutions[i]
             word = elem.word
             btn = Button(text=word + ' cost : ' + str(elem.score),
-             background_normal='',
-             background_down='',
-             background_color=WHITE if i else BLACK,
-             color=BLACK if i else WHITE, font_size=18, bold=True, size_hint=(1, 1)
-             )
+                         background_normal='',
+                         background_down='',
+                         background_color=WHITE if i else BLACK,
+                         color=BLACK if i else WHITE, font_size=18, bold=True, size_hint=(1, 1)
+                         )
             if not i:
                 self.showedButton = btn
             btn.ids['btn ind'] = i
@@ -332,7 +341,7 @@ class MainApp(App):
             self.meaningPanel.text += "Такого слова нет."
             return
         lines = len(meaning) / 20 + 10
-        #print(meaning)
+        # print(meaning)
         self.meaningPanel.height = self.meaningPanel.line_height * lines
         self.meaningPanel.text += meaning
 
@@ -351,8 +360,8 @@ class MainApp(App):
             return
         instance.text = "мои буквы : "
         self.lettersInput = TextInput(text="?", multiline=False, size_hint=instance.size_hint,
-                              pos=instance.pos, background_color=(1,1,1,1), foreground_color=(0,0,0,1), font_size=30)
+                                      pos=instance.pos, background_color=(1, 1, 1, 1), foreground_color=(0, 0, 0, 1),
+                                      font_size=30)
         self.lettersInput.bind(on_text_validate=self.on_enterMyLetters)
         self.layout.add_widget(self.lettersInput)
-        
-        
+
