@@ -2,7 +2,7 @@
 
 # prepare words and meanings
 
-WORDS_IN_SOLUTION = 50
+WORDS_IN_SOLUTION = 40
 
 letterCost = {
     'а': 1,
